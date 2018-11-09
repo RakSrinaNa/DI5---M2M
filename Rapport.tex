@@ -16,15 +16,120 @@
 			Le code utilisé est disponible en \autoref{code:led}.
 			
 		\section{LED RGB}
+			Afin de pouvoir utiliser la LED RGB, nous utilisons la librairie ChainableLED.
+			Cette dernière nous permet de créer des objets ChainableLED.
+			Pour l'initialiser nous donnons la broche de l'horloge, la broche des données puis enfin le nombre de LEDs dans la chaine.
+			Par exemple si nous branchons la LED en D3, nous initialisons avec led(3,4,1).
 			
+			Une fois l'objet créé, il ne faut pas oublier de l'initialiser dans la méthode init grâce à led.init().
 			
+			Dans le code nous pouvons ensuite utiliser les méthodes fournies:
+			\begin{easylist}[itemize]
+				@ void setColorRGB(led, red, green, blue);
+				@ void setColorHSB(led, hue, saturation, brightness);
+			\end{easylist}
+			
+  			Le paramètre led correspond à l'indice de la LED dans la chaine.
+  			
+  			Concernant la boucle loop, cette dernière effectue les opérations suivantes:
+  			\begin{easylist}[itemize]
+  				@ Récupère la valeur du potentiomètre (analogRead)
+  				@ Si cette valeur est plus grande qu'un seuil, on allume une des LED, sinon on l'éteint
+  				@ On map la valeur du potentiomètre entre 0 et 1 puis allumons la LED RGB avec comme intensité la valeur mappé
+  				@ On attend 20ms
+  			\end{easylist}
+  			
+  			Le code est disponible en \autoref{code:rgb}.
+  			
+  		\section{Température}
+  			De la même manière pour la température, nous utilisons la librairie DHT.
+  			Nous pouvons ensuite créer un objet DHT avec comme paramètres le port sur lequel est branché le capteur ainsi que le type du capteur utilisé.
+  			
+  			Il fait ensuite initialiser notre objet dans la fonction init grace à dht.begin().
+  			
+  			Enfin nous pouvons obtenir la température et l'humidité grâce aux fonction dht.readHumidity() et dht.readTemperature().
+  			
+  			Notre code fait exactement les mêmes étapes qu'avec le potentiomètre mais map la température entre 20 et 50 degrés vert une valeur entre 0 et 255 pour controller la LED en RGB.
+  			Voir \autoref{code:temp}.
+  			
+  		\section{LCD}
+  			Encore une fois pour utiliser l'écran LCD nous utilisons une librairie: rgb\_lcd.
+  			L'objet à créer est un bjet rgb\_lcd.
+  			Nous l'initialisons dans le setup grâce à lcd.begin(nombre de colonnes, nombre de lignes).
+  			Ensuite nous définissons une couleur par défaut.
+  			
+  			Dans la fonction loop, nous récupérons la température et humidité puis l'affichons sur l'écran.
+  			Pour cela:
+  			\begin{easylist}[itemize]
+  				@ On place le curseur en 0,0 grâce à set cursor
+  				@ On écrit "T :"
+  				@ On place le curseur en 4,0
+  				@ On écris la température
+  				@ On place le curseur en 0,1
+  				@ On écrit "H :"
+  				@ On place le curseur en 4,1
+  				@ On écris l'humidité
+  				@ On place le curseur en 15,1
+  				@ On écris "\%"
+  			\end{easylist}
+  			
+  			De plus nous changeons la couleur de l'écran en fonction de la température et humidité grâce à lcd.setColor(rouge, vert, bleu).
+  			
+  			Code disponible en \autoref{code:lcd}.
+  	
+  	\chapter{TP1}
+  		\section{Adresse I2C}
+  			Afin de récupérer l'adresse I2C du capteur, nous utilisons le I2CScanner proposé \href{https://playground.arduino.cc/Main/I2cScanner}{ici}.
+  			Grâce à ce code, nous avons pu identifier que le baromètre à pour adresse 0x76.
+  			
+  		\section{Registre}
+  			\begin{easylist}[itemize]
+  				@ 0x0D: ID, contient l'ID du périphérique.
+  				@ 0xE0: Reset, si on écrit 0xB6, le périphérique est réinitialisé.
+  				@ 0xF2: ctrl\_hum, permet de définir les options de mesure de l'humidité. Le registre devient effectif après une écriture dans ctrl\_meas.
+  				@ 0xF3: status, contient 2 bits indiquant le status du périphérique.
+  				@@ Bit 3: mis à 1 quand une conversion est en cours, et 0 quand les résultats ont étés transférés.
+  				@@ Bit 0: mis à 1 quand des données NVM sont copiés dans l'image du registre et 0 quand le transfert est fini.
+  				@ 0xF4 ctrl\_meas: enregistre les données de capture de pression et température.
+  				@ 0xF5 config: définis des options supplémentaires.
+  				@ 0xF7…0xF9 press (\_msb, \_lsb, \_xlsb): contient les valeurs non modifiées des mesures de pression.
+  				@ 0xFA…0xFC temp (\_msb, \_lsb, \_xlsb): pareil mais pour la température.
+  				@ 0xFD…0xFE hum (\_msb, \_lsb): pareil mais pour l'humidité.
+  				\end{easylist}
+  			
+  		\section{Librairie}
+  			La librairie comporte un problème, le port I2C utilisé est 0x77 et non pas 0x76.
+  			Nous avons donc du changer ce paramètre.
+  			
+  			On commence par déclarer un objet Adafruit\_BME280 puis on l'initialise avec bme.begin().
+  			
+  			Afin d'obtenir les mesures physiques, nous avons accès à:
+  			\begin{easylist}[itemize]
+  				@ bme.readTemperature()
+  				@ bme.readHumidity()
+  				@ bme.readPressure()
+  				@ bme.readAltitude(SEALEVELPRESSURE\_HPA) où le paramètre correspond à la pression à l'altitude 0.
+  			\end{easylist}
+  			
+  			Puis on affiche les données sur l'écran LCD.
+  			Le code est disponible en \autoref{code:bme}.
+
 			
 \appendix
 	\chapter{Prise en main}
 		\section{Faire clignoter une LED\label{code:led}}
 			\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
 			
-		\section{LED RGB}
-			\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
+		\section{LED RGB\label{code:rgb}}
+			\lstinputlisting[caption=led\_rgb\_pot.ino, language=JAVA]{"TP M2M/led_rgb_pot/led_rgb_pot.ino"}
+			
+		\section{Température\label{code:temp}}
+			\lstinputlisting[caption=led\_rgb\_temp.ino, language=JAVA]{"TP M2M/led_rgb_temp/led_rgb_temp.ino"}
+			
+		\section{LCD\label{code:lcd}}
+			\lstinputlisting[caption=lcd.ino, language=JAVA]{"TP M2M/lcd/lcd.ino"}
+			
+		\section{Baromètre\label{code:bme}}
+			\lstinputlisting[caption=bme.ino, language=JAVA]{"TP1/bme/bme.ino"}
 
 \end{document}
