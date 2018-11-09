@@ -3,7 +3,7 @@
 
 #define led1 13
 #define led2 3
-#define pot 0
+#define pot A0
 #define To 500
 
 int p = 0;
@@ -21,7 +21,7 @@ void setup() {
 void loop() {
   float humidity = dht.readHumidity();
   float temp = dht.readTemperature();
-  p = humidity + temp;
+  p = temp;
   Serial.print("H : ");
   Serial.print(humidity);
   Serial.print("       T : ");
@@ -32,8 +32,9 @@ void loop() {
   else{
     digitalWrite(led1, LOW);
   }
-  float f = p/2048.0;
-  led.setColorHSB(0, 0.5, 1, 0.5);
+  float f = 255*(p-20.0)/(50.0-20.0);
+  
+  led.setColorRGB(0, f, 255-f, 0);
   Serial.println(f);
   delay(100);
 }
