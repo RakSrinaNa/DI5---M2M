@@ -1,0 +1,30 @@
+\documentclass{report}
+\usepackage{MCC}
+
+\def\footauthor{Thomas COUCHOUD \& Victor COLEAU}
+\title{TP M2M}
+\author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
+
+\begin{document}
+	\mccTitle
+	
+	\chapter{Prise en main}
+		\section{Faire clignoter une LED}
+			Controller la LED ne pose pas de grand problème.
+			Il faut juste bien penser à initialiser les différents éléments (Serial, port de la LED).
+			
+			Le code utilisé est disponible en \autoref{code:led}.
+			
+		\section{LED RGB}
+			
+			
+			
+\appendix
+	\chapter{Prise en main}
+		\section{Faire clignoter une LED\label{code:led}}
+			\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
+			
+		\section{LED RGB}
+			\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
+
+\end{document}
