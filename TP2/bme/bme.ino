@@ -5,8 +5,6 @@ rgb_lcd lcd;
 
 #define _SEEED_H_
 
-#include <Arduino.h>
-
 #define ADDRESS   0x76
 
 #define REG_DIG_T1    0x88
@@ -308,8 +306,8 @@ void loop() {
 
     Serial.println();
     
-    float f = 255*(t-20.0)/(15.0);
-    lcd.setRGB(f, 255-f, h / 100.0 * 255.0);
+    float f = 255*(t-20.0)/(30.0);
+    lcd.setRGB(255-f, f, h / 100.0 * 255);
 
     lcd.setCursor(0, 0);
     lcd.print("T:");
