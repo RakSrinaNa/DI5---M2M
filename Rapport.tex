@@ -113,23 +113,40 @@
   			
   			Puis on affiche les données sur l'écran LCD.
   			Le code est disponible en \autoref{code:bme}.
+  			
+  	\chapter{TP2}
+  		Avec utilisation de la librairie AdafruitBME280, notre programme occupait 12300 octets.
+  		
+  		Après n'avoir gardé que l'utile de la librairie nous arrivons à ne plus utiliser que 10616 octets soit un gain de 14\%.
+  		
+  		Le code est disponible en \autoref{code:bme2}.
+  		
+  		\begin{figure}[H]
+  			\begin{minipage}{0.49\textwidth}
+  				\img{image1.jpeg}{Faible température, faible pression}{width=\textwidth,angle=270}
+  			\end{minipage}	
+  			\begin{minipage}{0.49\textwidth}
+  				\img{image2.jpeg}{Température élevée, pression élevée}{width=\textwidth,angle=270}
+  			\end{minipage}	
+  		\end{figure}
 
-			
+  		
 \appendix
-	\chapter{Prise en main}
-		\section{Faire clignoter une LED\label{code:led}}
-			\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
+	\chapter{Faire clignoter une LED\label{code:led}}
+		\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
 			
-		\section{LED RGB\label{code:rgb}}
-			\lstinputlisting[caption=led\_rgb\_pot.ino, language=JAVA]{"TP M2M/led_rgb_pot/led_rgb_pot.ino"}
+	\chapter{LED RGB\label{code:rgb}}
+		\lstinputlisting[caption=led\_rgb\_pot.ino, language=JAVA]{"TP M2M/led_rgb_pot/led_rgb_pot.ino"}
 			
-		\section{Température\label{code:temp}}
-			\lstinputlisting[caption=led\_rgb\_temp.ino, language=JAVA]{"TP M2M/led_rgb_temp/led_rgb_temp.ino"}
+	\chapter{Température\label{code:temp}}
+		\lstinputlisting[caption=led\_rgb\_temp.ino, language=JAVA]{"TP M2M/led_rgb_temp/led_rgb_temp.ino"}
 			
-		\section{LCD\label{code:lcd}}
-			\lstinputlisting[caption=lcd.ino, language=JAVA]{"TP M2M/lcd/lcd.ino"}
+	\chapter{LCD\label{code:lcd}}
+		\lstinputlisting[caption=lcd.ino, language=JAVA]{"TP M2M/lcd/lcd.ino"}
+	\chapter{Baromètre\label{code:bme}}
+		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP1/bme/bme.ino"}
 			
-		\section{Baromètre\label{code:bme}}
-			\lstinputlisting[caption=bme.ino, language=JAVA]{"TP1/bme/bme.ino"}
+	\chapter{Baromètre avec librairie minimale\label{code:bme2}}
+		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP2/bme/bme.ino"}
 
 \end{document}
