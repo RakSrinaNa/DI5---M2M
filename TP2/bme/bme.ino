@@ -3,45 +3,45 @@
 
 rgb_lcd lcd;
 
-#define _SEEED_BME280_H_
+#define _SEEED_H_
 
 #include <Arduino.h>
 
-#define BME280_ADDRESS   0x76
+#define ADDRESS   0x76
 
-#define BME280_REG_DIG_T1    0x88
-#define BME280_REG_DIG_T2    0x8A
-#define BME280_REG_DIG_T3    0x8C
+#define REG_DIG_T1    0x88
+#define REG_DIG_T2    0x8A
+#define REG_DIG_T3    0x8C
 
-#define BME280_REG_DIG_P1    0x8E
-#define BME280_REG_DIG_P2    0x90
-#define BME280_REG_DIG_P3    0x92
-#define BME280_REG_DIG_P4    0x94
-#define BME280_REG_DIG_P5    0x96
-#define BME280_REG_DIG_P6    0x98
-#define BME280_REG_DIG_P7    0x9A
-#define BME280_REG_DIG_P8    0x9C
-#define BME280_REG_DIG_P9    0x9E
+#define REG_DIG_P1    0x8E
+#define REG_DIG_P2    0x90
+#define REG_DIG_P3    0x92
+#define REG_DIG_P4    0x94
+#define REG_DIG_P5    0x96
+#define REG_DIG_P6    0x98
+#define REG_DIG_P7    0x9A
+#define REG_DIG_P8    0x9C
+#define REG_DIG_P9    0x9E
 
-#define BME280_REG_DIG_H1    0xA1
-#define BME280_REG_DIG_H2    0xE1
-#define BME280_REG_DIG_H3    0xE3
-#define BME280_REG_DIG_H4    0xE4
-#define BME280_REG_DIG_H5    0xE5
-#define BME280_REG_DIG_H6    0xE7
+#define REG_DIG_H1    0xA1
+#define REG_DIG_H2    0xE1
+#define REG_DIG_H3    0xE3
+#define REG_DIG_H4    0xE4
+#define REG_DIG_H5    0xE5
+#define REG_DIG_H6    0xE7
 
-#define BME280_REG_CHIPID          0xD0
-#define BME280_REG_VERSION         0xD1
-#define BME280_REG_SOFTRESET       0xE0
+#define REG_CHIPID          0xD0
+#define REG_VERSION         0xD1
+#define REG_SOFTRESET       0xE0
 
-#define BME280_REG_CAL26           0xE1
+#define REG_CAL26           0xE1
 
-#define BME280_REG_CONTROLHUMID    0xF2
-#define BME280_REG_CONTROL         0xF4
-#define BME280_REG_CONFIG          0xF5
-#define BME280_REG_PRESSUREDATA    0xF7
-#define BME280_REG_TEMPDATA        0xFA
-#define BME280_REG_HUMIDITYDATA    0xFD
+#define REG_CONTROLHUMID    0xF2
+#define REG_CONTROL         0xF4
+#define REG_CONFIG          0xF5
+#define REG_PRESSUREDATA    0xF7
+#define REG_TEMPDATA        0xFA
+#define REG_HUMIDITYDATA    0xFD
 
 #define _INVALID_DATA 0
 
@@ -77,32 +77,32 @@ void init2()
 {
   Wire.begin();
 
-  if(BME280Read8(BME280_REG_CHIPID) != 0x60)
+  if(Read8(REG_CHIPID) != 0x60)
     return ;
 
-  dig_T1 = BME280Read16LE(BME280_REG_DIG_T1);
-  dig_T2 = BME280ReadS16LE(BME280_REG_DIG_T2);
-  dig_T3 = BME280ReadS16LE(BME280_REG_DIG_T3);
+  dig_T1 = Read16LE(REG_DIG_T1);
+  dig_T2 = ReadS16LE(REG_DIG_T2);
+  dig_T3 = ReadS16LE(REG_DIG_T3);
 
-  dig_P1 = BME280Read16LE(BME280_REG_DIG_P1);
-  dig_P2 = BME280ReadS16LE(BME280_REG_DIG_P2);
-  dig_P3 = BME280ReadS16LE(BME280_REG_DIG_P3);
-  dig_P4 = BME280ReadS16LE(BME280_REG_DIG_P4);
-  dig_P5 = BME280ReadS16LE(BME280_REG_DIG_P5);
-  dig_P6 = BME280ReadS16LE(BME280_REG_DIG_P6);
-  dig_P7 = BME280ReadS16LE(BME280_REG_DIG_P7);
-  dig_P8 = BME280ReadS16LE(BME280_REG_DIG_P8);
-  dig_P9 = BME280ReadS16LE(BME280_REG_DIG_P9);
+  dig_P1 = Read16LE(REG_DIG_P1);
+  dig_P2 = ReadS16LE(REG_DIG_P2);
+  dig_P3 = ReadS16LE(REG_DIG_P3);
+  dig_P4 = ReadS16LE(REG_DIG_P4);
+  dig_P5 = ReadS16LE(REG_DIG_P5);
+  dig_P6 = ReadS16LE(REG_DIG_P6);
+  dig_P7 = ReadS16LE(REG_DIG_P7);
+  dig_P8 = ReadS16LE(REG_DIG_P8);
+  dig_P9 = ReadS16LE(REG_DIG_P9);
 
-  dig_H1 = BME280Read8(BME280_REG_DIG_H1);
-  dig_H2 = BME280Read16LE(BME280_REG_DIG_H2);
-  dig_H3 = BME280Read8(BME280_REG_DIG_H3);
-  dig_H4 = (BME280Read8(BME280_REG_DIG_H4) << 4) | (0x0F & BME280Read8(BME280_REG_DIG_H4 + 1));
-  dig_H5 = (BME280Read8(BME280_REG_DIG_H5 + 1) << 4) | (0x0F & BME280Read8(BME280_REG_DIG_H5) >> 4);
-  dig_H6 = (int8_t)BME280Read8(BME280_REG_DIG_H6);
+  dig_H1 = Read8(REG_DIG_H1);
+  dig_H2 = Read16LE(REG_DIG_H2);
+  dig_H3 = Read8(REG_DIG_H3);
+  dig_H4 = (Read8(REG_DIG_H4) << 4) | (0x0F & Read8(REG_DIG_H4 + 1));
+  dig_H5 = (Read8(REG_DIG_H5 + 1) << 4) | (0x0F & Read8(REG_DIG_H5) >> 4);
+  dig_H6 = (int8_t)Read8(REG_DIG_H6);
 
-  writeRegister(BME280_REG_CONTROLHUMID, 0x05);  //Choose 16X oversampling
-  writeRegister(BME280_REG_CONTROL, 0xB7);  //Choose 16X oversampling
+  writeRegister(REG_CONTROLHUMID, 0x05);  //Choose 16X oversampling
+  writeRegister(REG_CONTROL, 0xB7);  //Choose 16X oversampling
 
 }
 
@@ -110,8 +110,8 @@ float getTemperature(void)
 {
   int32_t var1, var2;
 
-  int32_t adc_T = BME280Read24(BME280_REG_TEMPDATA);
-  // Check if the last transport successed
+  int32_t adc_T = Read24(REG_TEMPDATA);
+
   if(!isTransport_OK) {
     return _INVALID_DATA;
   }
@@ -132,14 +132,14 @@ uint32_t getPressure(void)
 {
   int64_t var1, var2, p;
 
-  // Call getTemperature to get t_fine
+
   getTemperature();
-  // Check if the last transport successed
+
   if(!isTransport_OK) {
     return _INVALID_DATA;
   }
 
-  int32_t adc_P = BME280Read24(BME280_REG_PRESSUREDATA);
+  int32_t adc_P = Read24(REG_PRESSUREDATA);
   adc_P >>= 4;
 
   var1 = ((int64_t)t_fine) - 128000;
@@ -148,10 +148,7 @@ uint32_t getPressure(void)
   var2 = var2 + (((int64_t)dig_P4)<<35);
   var1 = ((var1 * var1 * (int64_t)dig_P3)>>8) + ((var1 * (int64_t)dig_P2)<<12);
   var1 = (((((int64_t)1)<<47)+var1))*((int64_t)dig_P1)>>33;
-  if (var1 == 0)
-  {
-  return 0; // avoid exception caused by division by zero
-  }
+  if (var1 == 0) return 0;
   p = 1048576-adc_P;
   p = (((p<<31)-var2)*3125)/var1;
   var1 = (((int64_t)dig_P9) * (p>>13) * (p>>13)) >> 25;
@@ -164,14 +161,12 @@ uint32_t getHumidity(void)
 {
   int32_t v_x1_u32r, adc_H;
 
-  // Call getTemperature to get t_fine
   getTemperature();
-  // Check if the last transport successed
   if(!isTransport_OK) {
     return _INVALID_DATA;
   }
 
-  adc_H = BME280Read16(BME280_REG_HUMIDITYDATA);
+  adc_H = Read16(REG_HUMIDITYDATA);
 
   v_x1_u32r = (t_fine - ((int32_t)76800));
   v_x1_u32r = (((((adc_H << 14) - (((int32_t)dig_H4) << 20) - (((int32_t)dig_H5) * v_x1_u32r)) + ((int32_t)16384)) >> 15) * (((((((v_x1_u32r * ((int32_t)dig_H6)) >> 10) * (((v_x1_u32r * ((int32_t)dig_H3)) >> 11) + ((int32_t)32768))) >> 10) + ((int32_t)2097152)) * ((int32_t)dig_H2) + 8192) >> 14));
@@ -191,14 +186,14 @@ float calcAltitude(float pressure)
   return C;
 }
 
-uint8_t BME280Read8(uint8_t reg)
+uint8_t Read8(uint8_t reg)
 {
   Wire.beginTransmission(_address);
   Wire.write(reg);
   Wire.endTransmission();
 
   Wire.requestFrom(_address, 1);
-  // return 0 if slave didn't response
+
   if(Wire.available() < 1) {
     isTransport_OK = false;
     return 0;
@@ -209,7 +204,7 @@ uint8_t BME280Read8(uint8_t reg)
   return Wire.read();
 }
 
-uint16_t BME280Read16(uint8_t reg)
+uint16_t Read16(uint8_t reg)
 {
   uint8_t msb, lsb;
 
@@ -231,23 +226,23 @@ uint16_t BME280Read16(uint8_t reg)
   return (uint16_t) msb<<8 | lsb;
 }
 
-uint16_t BME280Read16LE(uint8_t reg)
+uint16_t Read16LE(uint8_t reg)
 {
-  uint16_t data = BME280Read16(reg);
+  uint16_t data = Read16(reg);
   return (data >> 8) | (data << 8);
 }
 
-int16_t BME280ReadS16(uint8_t reg)
+int16_t ReadS16(uint8_t reg)
 {
-  return (int16_t)BME280Read16(reg);
+  return (int16_t)Read16(reg);
 }
 
-int16_t BME280ReadS16LE(uint8_t reg)
+int16_t ReadS16LE(uint8_t reg)
 {
-  return (int16_t)BME280Read16LE(reg);
+  return (int16_t)Read16LE(reg);
 }
 
-uint32_t BME280Read24(uint8_t reg)
+uint32_t Read24(uint8_t reg)
 {
   uint32_t data;
 
@@ -274,10 +269,10 @@ uint32_t BME280Read24(uint8_t reg)
 
 void writeRegister(uint8_t reg, uint8_t val)
 {
-  Wire.beginTransmission(_address); // start transmission to device
-  Wire.write(reg);       // send register address
-  Wire.write(val);         // send value to write
-  Wire.endTransmission();     // end transmission
+  Wire.beginTransmission(_address);
+  Wire.write(reg);
+  Wire.write(val);
+  Wire.endTransmission();
 }
 
 void setup() {
@@ -313,7 +308,7 @@ void loop() {
 
     Serial.println();
     
-    float f = 255*(t-20.0)/(30.0);
+    float f = 255*(t-20.0)/(15.0);
     lcd.setRGB(f, 255-f, h / 100.0 * 255.0);
 
     lcd.setCursor(0, 0);
