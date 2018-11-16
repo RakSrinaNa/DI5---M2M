@@ -67,6 +67,9 @@ void loop() {
           else if(strcmp(path, "/altitude") == 0){
             printInfo(client, "Altitude", getAlt());
           }
+          else if(strstr(path, "/rgb?") != null){
+            char * r = strstr(path, "?") +1;
+          }
           else{
           printMainPage(client);
           }
