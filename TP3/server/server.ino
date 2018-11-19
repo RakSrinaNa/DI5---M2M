@@ -22,6 +22,7 @@ void setup()
   Serial.println(Ethernet.localIP());
   bme.begin();
   led.init();
+  setRGB(255, 255, 255);
 }
 
 void loop()
@@ -47,7 +48,6 @@ void loop()
      
       if(c == -1)
       {
-        Serial.write("\n");
         if (strcmp(method, "GET") == 0)
         {
           if (strcmp(path, "/") == 0)
@@ -123,7 +123,6 @@ void loop()
         break;
       }
       else{
-        Serial.write(c);
         if (c == ' ' && !methodCheck)
         {
           methodCheck = true;
