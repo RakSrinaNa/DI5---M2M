@@ -1,15 +1,17 @@
 //90-a2-da-0f-f9-fd
-#include <SPI.h>
 #include <Ethernet2.h>
-#include <Wire.h>
 #include <Adafruit_BME280.h>
-#include "rgb_lcd.h"
+#include <ChainableLED.h>
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 EthernetServer server(80);
 
 Adafruit_BME280 bme; // I2C
+ChainableLED led(3, 4, 1);
+byte R = 255;
+byte G = 255;
+byte B = 255;
 
 void setup()
 {
@@ -19,6 +21,7 @@ void setup()
   Serial.begin(9600);
   Serial.println(Ethernet.localIP());
   bme.begin();
+  led.init();
 }
 
 void loop()
@@ -26,8 +29,6 @@ void loop()
   EthernetClient client = server.available();
   if (client)
   {
-    bool currentLineIsBlank = true;
-
     char method[8] = {0};
     int methodCur = 0;
     bool methodCheck = false;
@@ -36,76 +37,118 @@ void loop()
     int pathCur = 0;
     bool pathCheck = false;
 
+    char lastLine[128] = {0};
+    int lastLineCur = 0;
+    int lastLineMax = 128;
+
     while (client.connected())
     {
       char c = client.read();
-      Serial.write(c);
-
-      if (c == ' ' && !methodCheck)
+     
+      if(c == -1)
       {
-        methodCheck = true;
-      }
-      else if (!methodCheck)
-      {
-        method[methodCur++] = c;
-      }
-
-      else if (c == ' ' && !pathCheck)
-      {
-        pathCheck = true;
-      }
-      else if (!pathCheck)
-      {
-        path[pathCur++] = c;
-      }
-
-      if (c == '\n' && currentLineIsBlank)
-      {
+        Serial.write("\n");
         if (strcmp(method, "GET") == 0)
         {
-          if (strcmp(path, "/temperature") == 0)
+          if (strcmp(path, "/") == 0)
           {
-            printInfo(client, "Temperature", getTemp());
+            printMainPage(client);
           }
-          else if (strcmp(path, "/humidity") == 0)
+          else if (strcmp(path, "/t") == 0)
           {
-            printInfo(client, "Humidity", getHumid());
+            printInfo(client, "Temperature", String(bme.readTemperature()));
           }
-          else if (strcmp(path, "/pressure") == 0)
+          else if (strcmp(path, "/h") == 0)
           {
-            printInfo(client, "Pressure", getPres());
+            printInfo(client, "Humidity", String(bme.readHumidity()));
           }
-          else if (strcmp(path, "/altitude") == 0)
+          else if (strcmp(path, "/p") == 0)
           {
-            printInfo(client, "Altitude", getAlt());
+            printInfo(client, "Pressure", String(bme.readPressure() / 100.0F));
           }
-          else if (strstr(path, "/rgb") == 0)
+          else if (strcmp(path, "/a") == 0)
           {
-            printInfo(client, "RGB", getRGB());
+            printInfo(client, "Altitude", String(bme.readAltitude(SEALEVELPRESSURE_HPA)));
+          }
+          else if (strcmp(path, "/rgb") == 0)
+          {
+            printInfo(client, "RGB", "R : " + String(R) + " / G : " + String(G) + " / B : " + String(B));
           }
           else
           {
-            printMainPage(client);
+            printInfo(client, "Error", "404");
           }
         }
         else if (strcmp(method, "POST") == 0)
         {
-          if (strstr(path, "/rgb") == 0)
+          if (strcmp(path, "/rgb") == 0)
           {
+            int rr = -1;
+            int gg = -1;
+            int bb = -1;
+            char * pch;
+            pch = strtok (lastLine,"&");
+            while (pch != NULL)
+            {
+              if(strstr(pch, "=") == (pch + 1)){
+                if(pch[0] == 'R'){
+                  rr = strtol(pch + 2, NULL, 10);
+                }
+                else if(pch[0] == 'G'){
+                  gg = strtol(pch + 2, NULL, 10);
+                }
+                else if(pch[0] == 'B'){
+                  bb = strtol(pch + 2, NULL, 10);
+                }
+              }
+              pch = strtok(NULL, "&");
+            }
+            if(rr < 0 || gg < 0 || bb < 0 || rr > 255 || gg > 255 || bb > 255){
+              printInfo(client, "Error", "402");
+            }
+            else
+            {
+               setRGB((byte)rr, (byte)gg, (byte)bb);
+               printMainPage(client);
+            }
           }
-          printMainPage(client);
+          else{
+           printInfo(client, "Error", "404");
+          }
         }
         else
         {
-          printMainPage(client);
+          printInfo(client, "Error", "404");
         }
-
         break;
       }
-      if (c == '\n')
-        currentLineIsBlank = true;
-      else if (c != '\r')
-        currentLineIsBlank = false;
+      else{
+        Serial.write(c);
+        if (c == ' ' && !methodCheck)
+        {
+          methodCheck = true;
+        }
+        else if (!methodCheck)
+        {
+          method[methodCur++] = c;
+        }
+        else if (c == ' ' && !pathCheck)
+        {
+          pathCheck = true;
+        }
+        else if (!pathCheck)
+        {
+          path[pathCur++] = c;
+        }
+
+        if(c == '\n'){
+          for(int i = 0; i < lastLineMax; i++)
+            lastLine[i] = 0;
+          lastLineCur = 0;
+        }
+        else if(lastLineCur < lastLineMax)
+          lastLine[lastLineCur++] = c;
+      }
     }
     delay(1);
     client.stop();
@@ -113,45 +156,25 @@ void loop()
   }
 }
 
-float getTemp()
-{
-  return bme.readTemperature();
-}
-
-float getHumid()
-{
-  return bme.readHumidity();
-}
-
-float getPres()
-{
-  return bme.readPressure() / 100.0F;
-}
-
-float getAlt()
-{
-  return bme.readAltitude(SEALEVELPRESSURE_HPA);
+void setRGB(byte rr, byte gg, byte bb){
+  R = rr;
+  G = gg;
+  B = bb;
+  led.setColorRGB(0, R, G, B);
 }
 
 void printMainPage(EthernetClient client)
 {
   Serial.println("Printing main page");
-  client.println("<html><head><title>Main</title></head><body><div><h3>GET</h3><a href=\"/temperature\">Temperature</a><br /><a href=\"/humidity\">Humidity</a><br /><a href=\"/pressure\">Pressure</a><br /><a href=\"/altitude\">Altitude</a></div><hr /><div><h3>POST</h3><form action=\"/rgb\" method=\"POST\">R:<br><input type=\"text\" name=\"R\"><br>G:<br><input type=\"text\" name=\"G\"><br>B:<br><input type=\"text\" name=\"B\"><br><input type=\"submit\" value=\"Submit\"></form></div></body></html>");
-}
-
-void printInfo(EthernetClient client, String title, float value)
-{
-  printInfo(client, title, ""+value);
+  client.println("<html><body><h3>GET</h3><a href='/t'>Temp</a><br /><a href='/h'>Hum</a><br /><a href='/p'>Press</a><br /><a href='/a'>Alt</a><br /><a href='/rgb'>LED</a><hr /><h3>POST</h3><form action='/rgb' method='POST'>R:<br><input type='text' name='R'><br>G:<br><input type='text' name='G'><br>B:<br><input type='text' name='B'><br><input type='submit' value='Submit'></form></body></html>");
 }
 
 void printInfo(EthernetClient client, String title, String value)
 {
-  Serial.println("Printing info page");
-  client.print("<html><head><title>");
-  client.print(title);
-  client.print("</title></head><body><div>");
+  Serial.print("Printing info page ");
+  client.print("<html><body>");
   client.print(title);
   client.print(" is ");
   client.print(value);
-  client.println("</div></body></html>");
+  client.println("<hr/><a href='/'><h1>Back</h1></a></body></html>");
 }
