@@ -1,0 +1,6 @@
+GET / HTTP/1.1
+Host: 192.168.0.1
+User-Agent: insomnia/6.2.0
+Content-Type: multipart/form-data; boundary=X-INSOMNIA-BOUNDARY
+Accept: */*
+Content-Length: 25

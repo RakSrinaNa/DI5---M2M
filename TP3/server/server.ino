@@ -79,9 +79,9 @@ void loop()
           {
             printInfo(client, "Altitude", getAlt());
           }
-          else if (strstr(path, "/rgb?") != null)
+          else if (strstr(path, "/rgb") == 0)
           {
-            char *r = strstr(path, "?") + 1;
+            printInfo(client, "RGB", getRGB());
           }
           else
           {
@@ -90,7 +90,7 @@ void loop()
         }
         else if (strcmp(method, "POST") == 0)
         {
-          if (strstr(path, "/rgb?") != null)
+          if (strstr(path, "/rgb") == 0)
           {
           }
           printMainPage(client);
@@ -139,7 +139,12 @@ void printMainPage(EthernetClient client)
   client.println("<html><head><title>Main</title></head><body><div><h3>GET</h3><a href=\"/temperature\">Temperature</a><br /><a href=\"/humidity\">Humidity</a><br /><a href=\"/pressure\">Pressure</a><br /><a href=\"/altitude\">Altitude</a></div><hr /><div><h3>POST</h3><form action=\"/rgb\" method=\"POST\">R:<br><input type=\"text\" name=\"R\"><br>G:<br><input type=\"text\" name=\"G\"><br>B:<br><input type=\"text\" name=\"B\"><br><input type=\"submit\" value=\"Submit\"></form></div></body></html>");
 }
 
-void printInfo(EthernetClient client, char *title, float value)
+void printInfo(EthernetClient client, String title, float value)
+{
+  printInfo(client, title, ""+value);
+}
+
+void printInfo(EthernetClient client, String title, String value)
 {
   Serial.println("Printing info page");
   client.print("<html><head><title>");
