@@ -2,7 +2,7 @@
 \usepackage{MCC}
 
 \def\footauthor{Thomas COUCHOUD \& Victor COLEAU}
-\title{TP M2M}
+\title{TP Machine to Machine}
 \author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
 
 \begin{document}
@@ -45,16 +45,16 @@
   			De la même manière pour la température, nous utilisons la librairie DHT.
   			Nous pouvons ensuite créer un objet DHT avec comme paramètres le port sur lequel est branché le capteur ainsi que le type du capteur utilisé.
   			
-  			Il fait ensuite initialiser notre objet dans la fonction init grace à dht.begin().
+  			Il faut ensuite initialiser notre objet dans la fonction init grace à dht.begin().
   			
   			Enfin nous pouvons obtenir la température et l'humidité grâce aux fonction dht.readHumidity() et dht.readTemperature().
   			
-  			Notre code fait exactement les mêmes étapes qu'avec le potentiomètre mais map la température entre 20 et 50 degrés vert une valeur entre 0 et 255 pour controller la LED en RGB.
+  			Notre code fait exactement les mêmes étapes qu'avec le potentiomètre mais map la température entre 20 et 50 degrés vers une valeur entre 0 et 255 pour controller la LED en RGB.
   			Voir \autoref{code:temp}.
   			
   		\section{LCD}
   			Encore une fois pour utiliser l'écran LCD nous utilisons une librairie: rgb\_lcd.
-  			L'objet à créer est un bjet rgb\_lcd.
+  			L'objet à créer est un objet rgb\_lcd.
   			Nous l'initialisons dans le setup grâce à lcd.begin(nombre de colonnes, nombre de lignes).
   			Ensuite nous définissons une couleur par défaut.
   			
@@ -164,13 +164,13 @@
 		\section{GET}
 			Le but d'un GET est d'obtenir des informations sur l'état de notre système.
 			
-			Nous offrons 3 chemins disponibles permettant de recevoir les valeurs leur étant associées:
+			Nous offrons 5 chemins disponibles permettant de recevoir les valeurs leur étant associées:
 			\begin{easylist}
-				@ /temperature
-				@ /humidity
-				@ /pressure
-				@ /altitude
-				@ /rgb
+				@ /temperature: Obtient la température.
+				@ /humidity: Obtient l'humidité.
+				@ /pressure: Obtient la pression.
+				@ /altitude: Obtient l'altitude.
+				@ /rgb: Obtient la couleur RGB de la LED.
 			\end{easylist}
 		
 		\section{POST}
