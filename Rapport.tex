@@ -129,7 +129,53 @@
   				\img{image2.jpeg}{Température élevée, pression élevée}{width=\textwidth,angle=270}
   			\end{minipage}	
   		\end{figure}
+  		
+  	\chapter{Client/Serveur}
+  		Afin de réaliser notre serveur, nous avons tout d'abord dû paramétrer le shield Ethernet.
+  		Pour cela nous appelons Ethernet.begin en lui passant son adresse MAC ainsi qu'une adresse IP.
+  		Nous avons choisi une adresse IP de classe C: 192.168.0.1.
+  		
+  		La configuration a été testée grâce à un ping ce qui permet de nous assurer de la bonne connectivité entre les deux éléments.
+  		
+  		\img{ping.png}{Test de ping}{}
+  		
+  		Vient ensuite la gestion du serveur afin de créer notre API REST.
+  		Nous avons débuté par l'acquisition des données au travers d'un EthernetServeur écoutant sur le port 80 (port HTTP par défaut).
+  		
+  		Pour récupérer un client se connectant nous utilisons server.available().
+  		Cette méthode étant bloquante nous pouvons la mettre sans problème dans la fonction loop d'Arduino.
+  		
+  		Dès qu'un client est disponible, nous lisons le payload qu'il envoie.
+  		Dans le cas d'une requête HTTP il est de la forme:
+  		\lstinputlisting[language=JAVA]{"TP3/http.txt"}
+  		
+  		Nous parsons deux éléments principaux:
+  		\begin{easylist}
+  			@ La méthode HTTP utilisée.
+  			@ Le chemin demandé sur le serveur.
+  		\end{easylist}
 
+		En fonction de ces données nous ajustons la sortie afin de présenter ce qui est demandé (ou modifions un état de l'Arduino).
+		
+		La page d'accueil permet de naviguer sur les différents points d'accès et aussi d'envoyer un formulaire pour la requête POST.
+		
+		\img{home.png}{Page d'accueil}{height=5cm}
+		
+		\section{GET}
+			Le but d'un GET est d'obtenir des informations sur l'état de notre système.
+			
+			Nous offrons 3 chemins disponibles permettant de recevoir les valeurs leur étant associées:
+			\begin{easylist}
+				@ /temperature
+				@ /humidity
+				@ /pressure
+				@ /altitude
+				@ /rgb
+			\end{easylist}
+		
+		\section{POST}
+			Contrairement au GET, un POST va nous permettre de modifier l'état de notre Arduino.
+			Dans notre cas nous autorisons de changer la couleur de la led grâce au point d'accès /rgb en passant comme paramètres les différentes valeurs du rouge, vert et bleu.
   		
 \appendix
 	\chapter{Faire clignoter une LED\label{code:led}}
@@ -148,5 +194,8 @@
 			
 	\chapter{Baromètre avec librairie minimale\label{code:bme2}}
 		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP2/bme/bme.ino"}
+		
+	\chapter{Serveur}
+		\lstinputlisting[caption=server.ino, language=JAVA]{"TP3/server/server.ino"}
 
 \end{document}
