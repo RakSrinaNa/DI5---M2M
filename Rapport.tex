@@ -176,6 +176,20 @@
 		\section{POST}
 			Contrairement au GET, un POST va nous permettre de modifier l'état de notre Arduino.
 			Dans notre cas nous autorisons de changer la couleur de la led grâce au point d'accès /rgb en passant comme paramètres les différentes valeurs du rouge, vert et bleu.
+			
+			Pour récupérer ces paramètres, nous lisons le body de la requête.
+			Ce dernier est formaté de la manière \\\cbo{?param1=val1\&param2=val2\&param3=val3\&...}.
+			On ne garde ensuite que la partie après le << ? >> et suivons les étapes suivantes:
+			\begin{easylist}[itemize]
+				@ On déclare des variables r, g, b initialisées à << -1 >>.
+				@ Pour chaque groupe \cbo{param=val}:
+				@@ On vérifie que param est soit << R >>, << G >> ou << B >>
+				@@ Si c'est le cas:
+				@@@ On récupère leur valeur associée et l'enregistrons dans une variable locale
+				@ Si r, g ou b n'est pas compris entre 0 et 255, on renvoie une erreur.
+				@ Sinon on change la couleur de la LED selon les paramètres récupérés.
+			\end{easylist}
+			
   		
 \appendix
 	\chapter{Faire clignoter une LED\label{code:led}}
@@ -196,6 +210,8 @@
 		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP2/bme/bme.ino"}
 		
 	\chapter{Serveur}
-		\lstinputlisting[caption=server.ino, language=JAVA]{"TP3/server2/server2.ino"}
+		\lstinputlisting[caption=server2.ino, language=JAVA]{"TP3/server2/server2.ino"}
+		
+		server.ino est aussi disponible et est la version utilisant la librarie BME.
 
 \end{document}
