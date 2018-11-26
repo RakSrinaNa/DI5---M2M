@@ -1,8 +1,7 @@
 #include <ChainableLED.h>
 
 #define led1 13
-#define led2 3
-#define pot 1
+#define pot 3
 #define To 500
 
 int p = 0;
@@ -24,7 +23,7 @@ void loop() {
     digitalWrite(led1, LOW);
   }
   float f = p/1023.0;
-  led2.setColorHSB(0, 0.5, 1, f);
+  led.setColorHSB(0, 0.5, 1, f);
   Serial.println(f);
   delay(100);
 }
