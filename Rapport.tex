@@ -1,0 +1,228 @@
+\documentclass{report}
+\usepackage{MCC}
+
+\def\footauthor{Thomas COUCHOUD \& Victor COLEAU}
+\title{TP Machine to Machine}
+\author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
+
+\begin{document}
+	\mccTitle
+	
+	\chapter{Prise en main}
+		\section{Faire clignoter une LED}
+			Controller la LED ne pose pas de grand problème.
+			Il faut juste bien penser à initialiser les différents éléments (Serial, port de la LED).
+			
+			Le code utilisé est disponible en \autoref{code:led}.
+			
+		\section{LED RGB}
+			Afin de pouvoir utiliser la LED RGB, nous utilisons la librairie ChainableLED.
+			Cette dernière nous permet de créer des objets ChainableLED.
+			Pour l'initialiser nous donnons la broche de l'horloge, la broche des données puis enfin le nombre de LEDs dans la chaine.
+			Par exemple si nous branchons la LED en D3, nous initialisons avec led(3,4,1).
+			
+			Une fois l'objet créé, il ne faut pas oublier de l'initialiser dans la méthode init grâce à led.init().
+			
+			Dans le code nous pouvons ensuite utiliser les méthodes fournies:
+			\begin{easylist}[itemize]
+				@ void setColorRGB(led, red, green, blue);
+				@ void setColorHSB(led, hue, saturation, brightness);
+			\end{easylist}
+			
+  			Le paramètre led correspond à l'indice de la LED dans la chaine.
+  			
+  			Concernant la boucle loop, cette dernière effectue les opérations suivantes:
+  			\begin{easylist}[itemize]
+  				@ Récupère la valeur du potentiomètre (analogRead)
+  				@ Si cette valeur est plus grande qu'un seuil, on allume une des LED, sinon on l'éteint
+  				@ On map la valeur du potentiomètre entre 0 et 1 puis allumons la LED RGB avec comme intensité la valeur mappé
+  				@ On attend 20ms
+  			\end{easylist}
+  			
+  			Le code est disponible en \autoref{code:rgb}.
+  			
+  		\section{Température}
+  			De la même manière pour la température, nous utilisons la librairie DHT.
+  			Nous pouvons ensuite créer un objet DHT avec comme paramètres le port sur lequel est branché le capteur ainsi que le type du capteur utilisé.
+  			
+  			Il faut ensuite initialiser notre objet dans la fonction init grace à dht.begin().
+  			
+  			Enfin nous pouvons obtenir la température et l'humidité grâce aux fonction dht.readHumidity() et dht.readTemperature().
+  			
+  			Notre code fait exactement les mêmes étapes qu'avec le potentiomètre mais map la température entre 20 et 50 degrés vers une valeur entre 0 et 255 pour controller la LED en RGB.
+  			Voir \autoref{code:temp}.
+  			
+  		\section{LCD}
+  			Encore une fois pour utiliser l'écran LCD nous utilisons une librairie: rgb\_lcd.
+  			L'objet à créer est un objet rgb\_lcd.
+  			Nous l'initialisons dans le setup grâce à lcd.begin(nombre de colonnes, nombre de lignes).
+  			Ensuite nous définissons une couleur par défaut.
+  			
+  			Dans la fonction loop, nous récupérons la température et humidité puis l'affichons sur l'écran.
+  			Pour cela:
+  			\begin{easylist}[itemize]
+  				@ On place le curseur en 0,0 grâce à set cursor
+  				@ On écrit "T :"
+  				@ On place le curseur en 4,0
+  				@ On écris la température
+  				@ On place le curseur en 0,1
+  				@ On écrit "H :"
+  				@ On place le curseur en 4,1
+  				@ On écris l'humidité
+  				@ On place le curseur en 15,1
+  				@ On écris "\%"
+  			\end{easylist}
+  			
+  			De plus nous changeons la couleur de l'écran en fonction de la température et humidité grâce à lcd.setColor(rouge, vert, bleu).
+  			
+  			Code disponible en \autoref{code:lcd}.
+  	
+  	\chapter{TP1}
+  		\section{Adresse I2C}
+  			Afin de récupérer l'adresse I2C du capteur, nous utilisons le I2CScanner proposé \href{https://playground.arduino.cc/Main/I2cScanner}{ici}.
+  			Grâce à ce code, nous avons pu identifier que le baromètre à pour adresse 0x76.
+  			
+  		\section{Registre}
+  			\begin{easylist}[itemize]
+  				@ 0x0D: ID, contient l'ID du périphérique.
+  				@ 0xE0: Reset, si on écrit 0xB6, le périphérique est réinitialisé.
+  				@ 0xF2: ctrl\_hum, permet de définir les options de mesure de l'humidité. Le registre devient effectif après une écriture dans ctrl\_meas.
+  				@ 0xF3: status, contient 2 bits indiquant le status du périphérique.
+  				@@ Bit 3: mis à 1 quand une conversion est en cours, et 0 quand les résultats ont étés transférés.
+  				@@ Bit 0: mis à 1 quand des données NVM sont copiés dans l'image du registre et 0 quand le transfert est fini.
+  				@ 0xF4 ctrl\_meas: enregistre les données de capture de pression et température.
+  				@ 0xF5 config: définis des options supplémentaires.
+  				@ 0xF7…0xF9 press (\_msb, \_lsb, \_xlsb): contient les valeurs non modifiées des mesures de pression.
+  				@ 0xFA…0xFC temp (\_msb, \_lsb, \_xlsb): pareil mais pour la température.
+  				@ 0xFD…0xFE hum (\_msb, \_lsb): pareil mais pour l'humidité.
+  				\end{easylist}
+  			
+  		\section{Librairie}
+  			La librairie comporte un problème, le port I2C utilisé est 0x77 et non pas 0x76.
+  			Nous avons donc du changer ce paramètre.
+  			
+  			On commence par déclarer un objet Adafruit\_BME280 puis on l'initialise avec bme.begin().
+  			
+  			Afin d'obtenir les mesures physiques, nous avons accès à:
+  			\begin{easylist}[itemize]
+  				@ bme.readTemperature()
+  				@ bme.readHumidity()
+  				@ bme.readPressure()
+  				@ bme.readAltitude(SEALEVELPRESSURE\_HPA) où le paramètre correspond à la pression à l'altitude 0.
+  			\end{easylist}
+  			
+  			Puis on affiche les données sur l'écran LCD.
+  			Le code est disponible en \autoref{code:bme}.
+  			
+  	\chapter{TP2}
+  		Avec utilisation de la librairie AdafruitBME280, notre programme occupait 12300 octets.
+  		
+  		Après n'avoir gardé que l'utile de la librairie nous arrivons à ne plus utiliser que 10616 octets soit un gain de 14\%.
+  		
+  		Le code est disponible en \autoref{code:bme2}.
+  		
+  		\begin{figure}[H]
+  			\begin{minipage}{0.49\textwidth}
+  				\img{image1.jpeg}{Faible température, faible pression}{width=\textwidth,angle=270}
+  			\end{minipage}	
+  			\begin{minipage}{0.49\textwidth}
+  				\img{image2.jpeg}{Température élevée, pression élevée}{width=\textwidth,angle=270}
+  			\end{minipage}	
+  		\end{figure}
+  		
+  	\chapter{Client/Serveur}
+  		Afin de réaliser notre serveur, nous avons tout d'abord dû paramétrer le shield Ethernet.
+  		Pour cela nous appelons Ethernet.begin en lui passant son adresse MAC ainsi qu'une adresse IP.
+  		Nous avons choisi une adresse IP de classe C: 192.168.0.1.
+  		
+  		La configuration a été testée grâce à un ping ce qui permet de nous assurer de la bonne connectivité entre les deux éléments.
+  		
+  		\img{ping.png}{Test de ping}{}
+  		
+  		Vient ensuite la gestion du serveur afin de créer notre API REST.
+  		Nous avons débuté par l'acquisition des données au travers d'un EthernetServeur écoutant sur le port 80 (port HTTP par défaut).
+  		
+  		Pour récupérer un client se connectant nous utilisons server.available().
+  		Cette méthode étant bloquante nous pouvons la mettre sans problème dans la fonction loop d'Arduino.
+  		
+  		Dès qu'un client est disponible, nous lisons le payload qu'il envoie.
+  		Dans le cas d'une requête HTTP il est de la forme:
+  		\lstinputlisting[language=JAVA]{"TP3/http.txt"}
+  		
+  		Nous parsons deux éléments principaux:
+  		\begin{easylist}
+  			@ La méthode HTTP utilisée.
+  			@ Le chemin demandé sur le serveur.
+  		\end{easylist}
+
+		En fonction de ces données nous ajustons la sortie afin de présenter ce qui est demandé (ou modifions un état de l'Arduino).
+		
+		La page d'accueil permet de naviguer sur les différents points d'accès et aussi d'envoyer un formulaire pour la requête POST.
+		
+		\img{home.png}{Page d'accueil}{height=5cm}
+		
+		\section{GET}
+			Le but d'un GET est d'obtenir des informations sur l'état de notre système.
+			
+			Nous offrons 5 chemins disponibles permettant de recevoir les valeurs leur étant associées:
+			\begin{easylist}
+				@ /temperature: Obtient la température.
+				@ /humidity: Obtient l'humidité.
+				@ /pressure: Obtient la pression.
+				@ /altitude: Obtient l'altitude.
+				@ /rgb: Obtient la couleur RGB de la LED.
+			\end{easylist}
+		
+		\section{POST}
+			Contrairement au GET, un POST va nous permettre de modifier l'état de notre Arduino.
+			Dans notre cas nous autorisons la modification de la couleur de la led grâce au point d'accès /rgb en passant comme paramètres les différentes valeurs du rouge, vert et bleu.
+			
+			Pour récupérer ces paramètres, nous lisons le body de la requête.
+			Ce dernier est formaté de la manière \\\cbo{?param1=val1\&param2=val2\&param3=val3\&...}.
+			On ne garde ensuite que la partie après le << ? >> et suivons les étapes suivantes:
+			\begin{easylist}[itemize]
+				@ On déclare des variables r, g, b initialisées à << -1 >>.
+				@ Pour chaque groupe \cbo{param=val}:
+				@@ On vérifie que param est soit << R >>, << G >> ou << B >>
+				@@ Si c'est le cas:
+				@@@ On récupère la valeur associée et l'enregistrons dans la variable locale
+				@ Si r, g ou b n'est pas compris entre 0 et 255, on renvoie une erreur.
+				@ Sinon on change la couleur de la LED selon les paramètres récupérés.
+			\end{easylist}
+			
+  		
+\appendix
+	\chapter{Configuration matérielle}
+		\begin{easylist}[itemize]
+			@ ShieldEthernet V2
+			@ LED branchée en D3
+			@ Ecran en I2C
+			@ BME280 en I2C
+			@ DHT en A0
+			@ Potentiomètre A3	
+		\end{easylist}
+
+
+	\chapter{Faire clignoter une LED\label{code:led}}
+		\lstinputlisting[caption=led.ino, language=JAVA]{"TP M2M/led/led.ino"}
+			
+	\chapter{LED RGB\label{code:rgb}}
+		\lstinputlisting[caption=led\_rgb\_pot.ino, language=JAVA]{"TP M2M/led_rgb_pot/led_rgb_pot.ino"}
+			
+	\chapter{Température\label{code:temp}}
+		\lstinputlisting[caption=led\_rgb\_temp.ino, language=JAVA]{"TP M2M/led_rgb_temp/led_rgb_temp.ino"}
+			
+	\chapter{LCD\label{code:lcd}}
+		\lstinputlisting[caption=lcd.ino, language=JAVA]{"TP M2M/lcd/lcd.ino"}
+	\chapter{Baromètre\label{code:bme}}
+		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP1/bme/bme.ino"}
+			
+	\chapter{Baromètre avec librairie minimale\label{code:bme2}}
+		\lstinputlisting[caption=bme.ino, language=JAVA]{"TP2/bme/bme.ino"}
+		
+	\chapter{Serveur}
+		\lstinputlisting[caption=server2.ino, language=JAVA]{"TP3/server2/server2.ino"}
+		
+		server.ino est aussi disponible et est la version utilisant la librarie BME.
+
+\end{document}
